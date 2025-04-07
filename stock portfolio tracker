@@ -1,0 +1,100 @@
+import random
+import json
+from datetime import datetime
+
+# A dictionary to store the portfolio
+portfolio = {}
+
+# File to save and load the portfolio
+portfolio_file = "portfolio.json"
+
+def save_portfolio():
+    """Save the portfolio to a file."""
+    with open(portfolio_file, 'w') as file:
+        json.dump(portfolio, file)
+    print("Portfolio saved successfully.")
+
+def load_portfolio():
+    """Load the portfolio from a file."""
+    global portfolio
+    try:
+        with open(portfolio_file, 'r') as file:
+            portfolio = json.load(file)
+        print("Portfolio loaded successfully.")
+    except FileNotFoundError:
+        print("No saved portfolio found. Starting fresh.")
+
+def add_stock():
+    symbol = input("Enter the stock symbol to add (e.g., AAPL, TSLA): ").upper()
+    try:
+        quantity = int(input("Enter the quantity: "))
+        portfolio[symbol] = portfolio.get(symbol, 0) + quantity
+        print(f"Added {quantity} of {symbol} to your portfolio.")
+    except ValueError:
+        print("Invalid quantity entered. Please enter a number.")
+
+def remove_stock():
+    symbol = input("Enter the stock symbol to remove (e.g., AAPL, TSLA): ").upper()
+    try:
+        quantity = int(input("Enter the quantity: "))
+        if symbol in portfolio:
+            portfolio[symbol] -= quantity
+            if portfolio[symbol] <= 0:
+                del portfolio[symbol]
+            print(f"Removed {quantity} of {symbol} from your portfolio.")
+        else:
+            print("Stock not found in portfolio.")
+    except ValueError:
+        print("Invalid quantity entered. Please enter a number.")
+
+def track_portfolio():
+    print("\nCurrent Portfolio:")
+    for symbol, quantity in portfolio.items():
+        # Simulated stock price and trend for demonstration
+        simulated_price = round(random.uniform(10, 500), 2)  # Random price between 10 and 500
+        trend = random.choice(["up", "down"])  # Random trend
+        total_value = quantity * simulated_price
+        print(f"{symbol}: Quantity = {quantity}, Price = ${simulated_price}, Total Value = ${total_value:.2f}, Trend = {trend}")
+    print()
+
+def get_portfolio_summary():
+    """Generate a summary of the portfolio's total value."""
+    total_portfolio_value = 0
+    print("\nPortfolio Summary:")
+    for symbol, quantity in portfolio.items():
+        simulated_price = round(random.uniform(10, 500), 2)  # Random price between 10 and 500
+        total_value = quantity * simulated_price
+        total_portfolio_value += total_value
+    print(f"Total Portfolio Value: ${total_portfolio_value:.2f}\n")
+
+def main_menu():
+    load_portfolio()  # Load portfolio at startup
+    while True:
+        print("\nStock Portfolio Tracker")
+        print("1. Add Stock")
+        print("2. Remove Stock")
+        print("3. Track Portfolio")
+        print("4. Portfolio Summary")
+        print("5. Save Portfolio")
+        print("6. Exit")
+        
+        choice = input("Choose an option (1-6): ")
+        if choice == '1':
+            add_stock()
+        elif choice == '2':
+            remove_stock()
+        elif choice == '3':
+            track_portfolio()
+        elif choice == '4':
+            get_portfolio_summary()
+        elif choice == '5':
+            save_portfolio()
+        elif choice == '6':
+            print("Exiting... Goodbye!")
+            save_portfolio()  # Auto-save on exit
+            break
+        else:
+            print("Invalid choice. Please choose a valid option.")
+
+if __name__ == "__main__":
+    main_menu()
