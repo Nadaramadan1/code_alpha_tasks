@@ -1,0 +1,53 @@
+import os
+import shutil
+from tkinter import Tk
+from tkinter.filedialog import askdirectory
+
+# Function to organize files into subfolders
+def organize_files(folder_path):
+    file_types = {
+        "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
+        "Videos": [".mp4", ".avi", ".mov", ".wmv"],
+        "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
+        "Music": [".mp3", ".wav", ".flac"],
+        "Others": []
+    }
+
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+
+        # Skip directories
+        if os.path.isdir(file_path):
+            continue
+
+        # Sort files into categories
+        file_moved = False
+        for category, extensions in file_types.items():
+            if any(filename.endswith(ext) for ext in extensions):
+                category_path = os.path.join(folder_path, category)
+                os.makedirs(category_path, exist_ok=True)
+                shutil.move(file_path, category_path)
+                file_moved = True
+                break
+
+        # Move files that don't match into "Others"
+        if not file_moved:
+            others_path = os.path.join(folder_path, "Others")
+            os.makedirs(others_path, exist_ok=True)
+            shutil.move(file_path, others_path)
+
+# GUI to select a folder
+def get_folder_path():
+    Tk().withdraw()  # Hides the root window
+    folder_path = askdirectory(title="Select a Folder to Organize")
+    return folder_path
+
+# Main function
+if __name__ == "__main__":
+    folder = get_folder_path()
+    if folder:
+        print(f"Organizing files in: {folder}")
+        organize_files(folder)
+        print("File organization complete!")
+    else:
+        print("No folder selected. Exiting...")
